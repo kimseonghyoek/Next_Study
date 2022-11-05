@@ -6,18 +6,19 @@ const name = ({ user }) => {
   return <div>{username}</div>
 };
 
-export const getServerSideProps = async ({ query }) => {
+name.getInitialProps = async ({ query }) => {
   const { name } = query;
   try {
     const res = await fetch(`https://api.github.com/users/${name}`);
     if (res.status === 200) {
       const user = await res.json();
-      return { props: { user }};
+      console.log(user.name)
+      return { user };
     }
     return { props: '아마 유저가 없음' };
   } catch (e) {
     console.log(e);
-    return { props: {} }
+    return {}
   }
 };
 
