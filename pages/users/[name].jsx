@@ -3,26 +3,52 @@ import React from 'react';
 import css from 'styled-jsx/css';
 
 const style = css`
-  h2 {
-    margin-left: 20px;
+  .profile-box {
+    width: 25%;
+    max-width: 272px;
+    margin-right: 26px;
   }
-  .user-bio {
-    margin-top: 12px;
-    font-style: italic;
+  .profile-image-wrapper {
+    width: 100%;
+    border: 1px solid #ele4e8;
+  }
+  .profile-image-wrapper .profile-image {
+    display: block;
+    width: 100%;
+  }
+  .profile-username {
+    margin: 0;
+    padding-top: 16px;
+    font-size: 26px;
+  }
+  .profile-user-login {
+    margin: 0;
+    font-size: 20px;
+  }
+  .profile-user-bio {
+    margin : 0;
+    padding-top: 16px;
+    font-size: 14px;
   }
 `;
 
 const name = ({ user }) => {
-  const username = user && user.name;
+  if (!user) {
+    return null;
+  }
   return <>
-    {user ? (
-      <div>
-        <h2>{user.name}</h2>
-        <p className='user-bio'>{user.bio}</p>
+    <div className='profile-box'>
+      <div className='profile-image-wrapper'>
+        <img
+          className='profile-image'
+          src={user.avatar_url}
+          alt={`${user.name} 프로필 이미지`}
+        />
       </div>
-    ) : (
-      <div>유저 정보가 없습니다.</div>
-    )}
+      <h2 className='profile-username'>{user.name}</h2>
+      <p className='profile-user-login'>{user.login}</p>
+      <p className='profile-user-bio'>{user.bio}</p>
+    </div>
     <style jsx>{style}</style>
   </>
 };
