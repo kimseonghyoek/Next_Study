@@ -12,19 +12,27 @@ const name = ({ user }) => {
     </>
   )
 }
-name.getInitialProps = async ({ query }) => {
+export const getServerSideProps = async ({ query }) => {
   const { name } = query;
   try {
-    const res = await fetch(`https://api.github.com/users/${name}`);
-    if (res.status === 200) {
-      const user = await res.json();
-      console.log(user.name)
-      return { user };
+    let user;
+    let repos;
+
+    const userRes = await fetch(`https://api.github.com/users/${name}`);
+    if (userRes.status === 200) {
+      user = await userRes.json();
     }
-    return { props: '아마 유저가 없음' };
+    const repoRes = await fetch(
+      `https://api.github.com/users/${name}/repos?sort=updated&page=1&per_page=10`
+    );
+    if (repoRes.status === 200) {
+      repos = await repoRes.json();
+    }
+    console.log(repos);
+    return { props: { user, repos } };
   } catch (e) {
     console.log(e);
-    return {}
+    return { props: {} };
   }
 };
 

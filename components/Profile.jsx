@@ -14,6 +14,7 @@ const style = css`
   .profile-image-wrapper .profile-image {
     display: block;
     width: 100%;
+    border-radius: 25px;
   }
   .profile-username {
     margin: 0;
