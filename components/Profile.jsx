@@ -9,7 +9,8 @@ const style = css`
   }
   .profile-image-wrapper {
     width: 100%;
-    border: 1px solid #ele4e8;
+    border-radius: 25px;
+    border: 1px solid #e1e4e8;
   }
   .profile-image-wrapper .profile-image {
     display: block;
