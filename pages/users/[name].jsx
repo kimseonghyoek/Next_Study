@@ -1,7 +1,10 @@
 import {} from "isomorphic-unfetch";
-import React from "react";
+import React from 'react';
+import Link from "next/link";
 import Profile from "../../components/Profile";
 import css from "styled-jsx/css";
+import formatDistance from 'date-fns/formatDistance';
+import { useRouter } from "next/router";
 
 const style = css`
   .user-contents-wrapper {
@@ -12,7 +15,7 @@ const style = css`
   .repos-wrapper {
     width: 100%;
     height: 100vh;
-    overflow: scroll;
+    // overflow: scroll;
     padding: 0px 16px;
   }
 
@@ -70,12 +73,48 @@ const style = css`
     background-color: rgba(27, 31, 35, 0.08);
     border-radius: 20px;
   }
+
+  .repository-pagination {
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 3px;
+    width: fit-content;
+    margin: auto;
+    margin-top: 20px;
+  }
+
+  .repository-pagination button {
+    padding: 6px 12px;
+    font-size: 14px;
+    border: 0;
+    color: #0366d6;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .repository-pagination button:first-child {
+    border-right: 1px solid rgba(27, 31, 35, 0.15);
+  }
+
+  .repository-pagination button:hover:not([disabled]) {
+    background-color: #0366d6;
+    color: white;
+  }
+
+  .repository-pagination button:disabled {
+    color: rgba(27, 31, 35, 0.3);
+  }
 `;
 
 const name = ({ user, repos }) => {
   if (!user) {
     return null;
   }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const router = useRouter();
+  const { page } = router.query;
+
   return (
     <div className="user-contents-wrapper">
       <Profile user={user} />
@@ -98,17 +137,41 @@ const name = ({ user, repos }) => {
               <p className="repository-description">{repo.description}</p>
               <p className="repository-language">
                 {repo.language}
-                <span className="repository-updated-at"></span>
+                <span className="repository-updated-at">
+                  {formatDistance(new Date(repo.updated_at), new Date(), {
+                    addSuffix: true,
+                  })}
+                </span>
               </p>
             </div>
           ))}
+                <div className="repository-pagination">
+        <Link href={`/users/${user.login}?page=${Number(page) - 1}`}>
+          <a>
+            <button type="button" disabled={page && page === "1"}>
+              Previous
+            </button>
+          </a>
+        </Link>
+
+        <Link
+          href={`/users/${user.login}?page=${!page ? "2" : Number(page) + 1}`}
+        >
+          <a>
+            <button type="button" disabled={repos.length < 10}>
+              Next
+            </button>
+          </a>
+        </Link>
+      </div>
       </div>
       <style jsx>{style}</style>
     </div>
   );
 };
+
 export const getServerSideProps = async ({ query }) => {
-  const { name } = query;
+  const { name, page } = query;
   try {
     let user;
     let repos;
@@ -118,7 +181,7 @@ export const getServerSideProps = async ({ query }) => {
       user = await userRes.json();
     }
     const repoRes = await fetch(
-      `https://api.github.com/users/${name}/repos?sort=updated&page=1&per_page=10`
+      `https://api.github.com/users/${name}/repos?sort=updated&page=${page}&per_page=10`
     );
     if (repoRes.status === 200) {
       repos = await repoRes.json();
