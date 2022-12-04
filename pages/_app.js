@@ -10,6 +10,7 @@ function MyApp({ Component, pageProps }) {
     `
     body {
       margin: 0;
+      font-family: 'Open Sans', sans-serif;
     }
     `
     }</style>
